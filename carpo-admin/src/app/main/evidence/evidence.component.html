@@ -1,0 +1,45 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách tài xế
+    </h3>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_content">
+      <table class="table table-striped table-bordered dt-responsive nowrap">
+        <thead>
+          <tr>
+            <th class="col-md-2 col-sm-2 col-xs-2">Tài xế</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Điện thoại</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Biển số xe</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Loại xe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of driversPersonnalScroll">
+            <td>
+              <a style="color : #3c8dbc !important;" routerLink="/main/evidence/driver/{{item.user_id._id}}">
+              {{item.user_id.fullname}}
+            </a></td>
+            <td>{{item.user_id.phone}}</td>
+            <td>{{item.license_plate}}</td>
+            <td>{{item.car_manufacturer}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="comfirmcars && comfirmcars.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Thông báo!</strong> Không tìm thấy hình ảnh
+        </div>
+      </div>
+      <div class="col-md-12">
+          <pagination [boundaryLinks]="true" [totalItems]="totalRow" [maxSize]="5" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+          class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+      </div>
+    </div>
+  </div>
+</div>

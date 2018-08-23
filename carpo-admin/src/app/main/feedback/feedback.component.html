@@ -1,0 +1,60 @@
+<div class="page-title">
+  <div class="title_left">
+    <h4>Phản hồi của khách hàng</h4>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_title">
+      <div class="col-md-3 col-sm-3 col-xs-12 form-group ">
+        <select class="form-control" name="filterStatus" [(ngModel)]="filterStatus">
+          <option value="0">Chưa đọc</option>
+          <option value="1">Đã đọc</option>
+        </select>
+      </div>
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button class="btn btn-primary" type="button" (click)="search()">
+            <i class="fa fa-search"></i>&nbsp;&nbsp;Tìm kiếm</button>
+          <button class="btn btn-default" type="button" (click)="reset()">
+            <i class="fa fa-refresh"></i>&nbsp;&nbsp;Reset</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <table id="feedback_table" class="row-border hover">
+      </table>
+    </div>
+  </div>
+</div>
+
+<div bsModal #ViewModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myNormalModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Chi tiết</h4>
+        <button type="button" class="close pull-right" (click)="ViewModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-horizontal form-label-left" *ngIf="entityView">
+          <div class="form-group">
+            <div class="col-md-7 col-sm-7 col-xs-12">
+              <div class="product-image">
+                <img src="{{entityView.image}}" alt="..." />
+              </div>
+            </div>
+            <div class="col-md-5 col-sm-5 col-xs-12" style="border:0px solid #e5e5e5;">
+              <h3 class="prod_title">{{entityView.user_id.fullname}}</h3>
+              <textarea rows="15" class="form-control col-xs-12" [(ngModel)]="entityView.message" readonly ></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

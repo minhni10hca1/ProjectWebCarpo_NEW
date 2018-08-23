@@ -1,0 +1,33 @@
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_title">
+      <div class="col-md-2 col-sm-2 col-xs-12 form-group">
+        <input type="text" name="startDate" daterangepicker [options]="dateOptions" (selected)="changeStartDate($event)" [(ngModel)]="filterStartDate"
+          class="form-control" placeholder="Từ ngày">
+        <span class="fa fa-calendar form-control-feedback right" aria-hidden="true"></span>
+      </div>
+      <div class="col-md-2 col-sm-2 col-xs-12 form-group ">
+        <input type="text" name="endDate" daterangepicker [options]="dateOptions" (selected)="changeEndDate($event)" [(ngModel)]="filterEndDate"
+          class="form-control" placeholder="Đến ngày">
+        <span class="fa fa-calendar form-control-feedback right" aria-hidden="true"></span>
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12 form-group ">
+        <angular2-multiselect class="form-group" [data]="itemList" name="filterDevice_Id" #filterDevice_Id="ngModel" [(ngModel)]="selectedItems"
+          [settings]="settings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)">
+        </angular2-multiselect>
+      </div>
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button type="submit" class="btn btn-primary" (click)="search()">
+            <i class="fa fa-search"></i>&nbsp;&nbsp;Xem lịch sử</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <div id="map"></div>
+    </div>
+  </div>
+</div>

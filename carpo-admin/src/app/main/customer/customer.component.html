@@ -1,0 +1,133 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách khách hàng
+    </h3>
+  </div>
+
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+        <input type="text" name="filter" [(ngModel)]="filter" (keypress)="search()" class="form-control" placeholder="Tìm kiếm theo tên, địa chỉ...">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button">Tìm!</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="row">
+
+  <div class="clearfix"></div>
+
+  <div class="x_panel">
+    <div class="x_title">
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button class="btn btn-success" *ngIf="_authenService.hasPermission()" (click)="showAdd()" aria-hidden="true">
+            <i class="fa fa-plus"></i>&nbsp;&nbsp;Thêm mới</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <table class="table table-striped table-bordered dt-responsive nowrap">
+        <thead>
+          <tr>
+            <th class="col-md-2 col-sm-2 col-xs-2">Tên khách hàng</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Địa chỉ</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Người dùng</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Điện thoại</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Ngày tạo</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">#</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of customers">
+            <td>{{item.company_name}}</td>
+            <td>{{item.address}}</td>
+            <td>{{item.customer_id?.fullname}}</td>
+            <td>{{item.customer_id?.phone}}</td>
+            <td>{{item.createdAt | date:'dd/MM/yyyy'}}</td>
+            <td>
+              <a *ngIf="_authenService.hasPermission()" (click)="showEdit(item._id)" class="btn btn-info btn-xs" aria-hidden="true">
+                <i class="fa fa-pencil"></i> Edit </a>
+              <a *ngIf="_authenService.hasPermission()" (click)="delete(item._id)" class="btn btn-danger btn-xs" aria-hidden="true">
+                <i class="fa fa-trash-o"></i> Delete </a>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+      <div *ngIf="customers && customers.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Thông báo!</strong> Không tìm thấy khách hàng
+        </div>
+      </div>
+      <div class="col-md-12">
+          <pagination [boundaryLinks]="true" [totalItems]="totalRow" [maxSize]="5" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+          class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div bsModal #addEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Chi tiết khách hàng</h4>
+        <button type="button" class="close pull-right" (click)="addEditModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm" (ngSubmit)="saveChanges(addEditForm)" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12 text-danger">Tên khách hàng</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="hidden" [(ngModel)]="entity._id" name="id" />
+              <input type="text" #company_name="ngModel" [(ngModel)]="entity.company_name" required minlength="3" name="company_name" class="form-control">
+              <small [hidden]="company_name.valid || (company_name.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập ít nhất 3 ký tự
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12">Địa chỉ </label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <input type="text" class="form-control" #address="ngModel" required [(ngModel)]="entity.address" name="address">
+              <small [hidden]="address.valid || (address.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập địa chỉ
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-3 col-sm-3 col-xs-12 text-danger">Người dùng</label>
+            <div class="col-md-9 col-sm-9 col-xs-12">
+              <ng-select class="form-group" highlightColor="#9575cd" highlightTextColor="#fff" [options]="customerUserOptions" required
+                [allowClear]="true" name="customer_id" #customer_id="ngModel" [(ngModel)]="entity.customer_id">
+              </ng-select>
+              <small [hidden]="customer_id.valid || (customer_id.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải chọn người dùng
+              </small>
+              <input type="hidden" [(ngModel)]="entity.customer_id" name="customer_id" class="form-control" />
+            </div>
+          </div>
+
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="button" (click)="addEditModal.hide()" class="btn btn-danger">Hủy bỏ</button>
+              <button type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Lưu lại</button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

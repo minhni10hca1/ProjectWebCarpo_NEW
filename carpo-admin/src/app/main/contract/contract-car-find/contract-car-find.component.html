@@ -1,0 +1,42 @@
+<div class="page-title">
+  <div class="title_left">
+    <h4>Tìm kiếm xe: {{filter}}
+    </h4>
+  </div>
+  <div class="title_right">
+    <div class="col-md-8 col-sm-8 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+        <input type="text" name="filter" [(ngModel)]="filter" (keypress)="search()" class="form-control" placeholder="Tìm kiếm tên thiết bị">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button" (click)="search()">Tìm!</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_content">
+      <table class="table table-hover" >
+        <thead>
+          <tr>
+            <th>Tên hợp đồng</th>
+            <th>Ghi chú</th>
+            <th>Từ ngày</th>
+            <th>Đến ngày</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of entity">
+            <th>{{item.name}}</th>
+            <td>{{item.descriptions}}</td>
+            <td>{{item.start_time}}</td>
+            <td>{{item.end_time}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

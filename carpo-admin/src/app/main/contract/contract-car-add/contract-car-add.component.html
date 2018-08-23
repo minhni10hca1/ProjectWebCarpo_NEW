@@ -1,0 +1,54 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Gán xe cho hợp đồng</h3>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_title">
+      <h2>{{title}}
+      </h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button class="btn btn-primary" routerLink="/main/contract/index">Quay lại</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <form class="form-horizontal form-label-left input_mask" novalidate #addCarForm="ngForm" (ngSubmit)="saveCampaignCars(addCarForm)">
+        <div class="form-group">
+          <div class="nav navbar-right panel_toolbox">
+            <button type="submit" class="btn btn-success" [disabled]="!addCarForm.form.valid">Lưu lại</button>
+          </div>
+        </div>
+        <div class="ln_solid"></div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="form-group">
+            <angular2-multiselect [data]="itemAvailableCarOptions" name="cars_id" #cars_id="ngModel" [(ngModel)]="selectedItemsCar" [settings]="dropdownSettings"
+              (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)" (onSelectAll)="onSelectAll($event)" (onDeSelectAll)="onDeSelectAll($event)">
+              <c-item>
+                <ng-template let-item="item">
+                  <label style="color: #333;min-width: 150px;">{{item.itemName}}</label>
+                  <label style="color: #333;">No - {{item.capital}}</label>
+                </ng-template>
+              </c-item>
+            </angular2-multiselect>
+            <small [hidden]="cars_id.valid || (cars_id.pristine && !addCarForm.submitted)" class="text-danger">
+              Bạn phải chọn xe
+            </small>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <select style="height: 400px; width: 100%;" class="selected form-control" multiple="">
+            <option *ngFor="let x of selectedItemsCar" [value]="x.id">{{x.capital}}</option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

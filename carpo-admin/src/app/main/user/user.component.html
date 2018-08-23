@@ -1,0 +1,280 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách người dùng
+    </h3>
+  </div>
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+        <input type="text" class="form-control" name="filter" (keyup.enter)="loadData()" [(ngModel)]="filter" placeholder="Gõ tên tài khoản...">
+        <span class="input-group-btn">
+          <button class="btn btn-default" (click)="loadData()" type="button">Tìm!</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <div class="x_panel">
+      <div class="x_title">
+        <div class="col-md-3 col-sm-3 col-xs-12 form-group ">
+          <select class="form-control" name="filterRoleCode" [(ngModel)]="filterRoleCode" (change)="selectedRoleCode($event)">
+            <option value="">--Tất cả--</option>
+            <option value="1">Manager</option>
+            <option value="2">Tài xế</option>
+            <option value="3">Khách hàng</option>
+          </select>
+        </div>
+        <div class="col-md-3 col-sm-3 col-xs-12 form-group ">
+          <select class="form-control" name="filterStatus" [(ngModel)]="filterStatus" (change)="selectedStatus($event)">
+            <option value="">--Tất cả--</option>
+            <option value="ACTIVE">Hoạt động</option>
+            <option value="INACTIVE">Chưa kíck hoạt</option>
+            <option value="SUSPENDED">Ngừng hoạt động</option>
+          </select>
+        </div>
+        <ul class="nav navbar-right panel_toolbox">
+          <li>
+            <button *ngIf="_authenService.hasPermission()" aria-hidden="true" class="btn btn-success" (click)="showAddModal()">
+              <i class="fa fa-plus"></i>&nbsp;&nbsp;Thêm mới</button>
+          </li>
+        </ul>
+        <div class="clearfix"></div>
+      </div>
+      <div class="x_content">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Tài khoản</th>
+              <th>Họ tên</th>
+              <th>Email</th>
+              <th>Ngày sinh</th>
+              <th>Số điện thoại</th>
+              <th>Nhóm</th>
+              <th>Loại</th>
+              <th>Trạng thái</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users">
+              <td>{{user.username}}</td>
+              <td>{{user.fullname}}</td>
+              <td>{{user.email}}</td>
+              <td>{{user.birthday | date:'dd/MM/yyyy'}}</td>
+              <td>{{user.phone}}</td>
+              <td>{{user.role}}</td>
+              <td *ngIf="user.role_code === '1'">Quản lý
+              </td>
+              <td *ngIf="user.role_code === '2'">Tài xế
+              </td>
+              <td *ngIf="user.role_code === '3'">Khách hàng
+              </td>
+              <td *ngIf="user.status === 'ACTIVE'">
+                <span class="label label-success">Hoạt động</span>
+              </td>
+              <td *ngIf="user.status === 'INACTIVE'">
+                <span class="label label-warning">Chưa kích hoạt</span>
+              </td>
+              <td *ngIf="user.status === 'SUSPENDED'">
+                <span class="label label-danger">Ngừng hoạt động</span>
+              </td>
+              <td>
+                <a *ngIf="user.username!='admin' && _authenService.hasPermission()" (click)="showEditModal(user._id)" class="btn btn-info btn-xs"
+                  aria-hidden="true">
+                  <i class="fa fa-pencil"></i> Edit </a>
+                <a *ngIf="user.username!='admin' && _authenService.hasPermission()" (click)="deleteItem(user._id)" class="btn btn-danger btn-xs"
+                  aria-hidden="true">
+                  <i class="fa fa-trash-o"></i> Delete </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="col-md-12">
+          <pagination [boundaryLinks]="true" [totalItems]="totalRow" [maxSize]="5" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+            class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--Modal add and edit-->
+<div bsModal #modalAddEdit="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Thêm/Sửa người dùng</h4>
+        <button type="button" class="close pull-right" (click)="modalAddEdit.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" #addEditForm="ngForm" novalidate (ngSubmit)="saveChange(addEditForm)" *ngIf="entity">
+
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Họ tên</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #fullname="ngModel" [(ngModel)]="entity.fullname" required minlength="3" name="fullname" class="form-control">
+              <small [hidden]="fullname.valid || (fullname.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập tên ít nhất 3 ký tự
+              </small>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Tài khoản</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #username="ngModel" [(ngModel)]="entity.username" [disabled]=is_edit required name="username" class="form-control">
+              <small [hidden]="username.valid || (username.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập tài khoản
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!entity._id">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Mật khẩu</label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <input type="password" reverse="true" #password="ngModel" [(ngModel)]="entity.password" required validateEqual="confirmPassword"
+                minlength="6" name="password" class="form-control">
+              <small [hidden]="password.valid || (password.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập tên ít nhất 6 ký tự và 1 ký tự số (vd: 123456Ab)
+              </small>
+            </div>
+          </div>
+          <div class="form-group" *ngIf="!entity._id">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Xác nhận mật khẩu</label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <input type="password" reverse="false" #confirmPassword="ngModel" [(ngModel)]="entity.confirmPassword" required validateEqual="password"
+                minlength="6" name="confirmPassword" class="form-control">
+              <small [hidden]="confirmPassword.valid || (confirmPassword.pristine && !addEditForm.submitted)" class="text-danger">
+                Xác nhận mật khẩu sai
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Email</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #email="ngModel" pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$" [(ngModel)]="entity.email" required
+                name="email" class="form-control">
+              <small [hidden]="email.valid || (email.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập email
+              </small>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Điện thoại</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #phone="ngModel" [(ngModel)]="entity.phone" required name="phone" class="form-control">
+              <small [hidden]="phone.valid || (phone.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập số điện thoại (vd: 01679072799 or +841679072799)
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Ngày sinh</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #birthday="ngModel" daterangepicker (selected)="selectedDate($event)" [options]="dateOptions" [(ngModel)]="entity.birthday"
+                name="birthday" class="form-control">
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Giới tính</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="radio" (change)="selectSex($event)" #sex="ngModel" [checked]="entity.sex=='Nam'" name="sex" [ngModel]="entity.sex"
+                value="Nam" /> Nam
+              <input type="radio" (change)="selectSex($event)" #sex="ngModel" [checked]="entity.sex=='Nu'" name="sex" [ngModel]="entity.sex"
+                value="Nu" /> Nữ
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Loại người dùng</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <select class="form-control" #role="ngModel" name="role" [(ngModel)]="entity.role">
+                <option value="Manager">Quản trị hệ thống</option>
+                <option value="Client">Người dùng</option>
+                <option value="CarAds">CarAds</option>
+              </select>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Nhóm người dùng</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <select class="form-control" #role_code="ngModel" name="role_code" [(ngModel)]="entity.role_code">
+                <option value="1">Manager</option>
+                <option value="2">Tài xế</option>
+                <option value="3">Khách hàng</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Trạng thái</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <select class="form-control" #status="ngModel" name="status" [(ngModel)]="entity.status">
+                <option value="ACTIVE">Hoạt động</option>
+                <option value="INACTIVE">Chưa kích hoạt</option>
+                <option value="SUSPENDED">Ngưng hoạt động</option>
+              </select>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Khách hàng / Leader</label>
+            <div class="col-md-4 col-sm-4 col-xs-12" *ngIf="entity.role_code === '3'">
+              <select class="form-control" name="customer_id" #customer_id="ngModel" [(ngModel)]="entity.customer_id">
+                <option value="">--Chọn khách hàng--</option>
+                <option *ngFor="let x of customers" [value]="x._id">{{x.company_name}}</option>
+              </select>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-12" *ngIf="entity.role_code === '2'">
+              <select class="form-control" name="cargroup_id" #cargroup_id="ngModel" [(ngModel)]="entity.cargroup_id">
+                <option value="">--Chọn nhóm tài xế--</option>
+                <option *ngFor="let x of cargroups" [value]="x._id">{{x.full_name}}</option>
+              </select>
+            </div>
+
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Token hết hạn (hour)</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="number" #token_expiresIn="ngModel" required [(ngModel)]="entity.token_expiresIn" name="token_expiresIn" class="form-control"
+              />
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th># No</th>
+                <th>Account Name</th>
+                <th>Bank Code</th>
+                <th>Bank Name</th>
+                <th>Branch Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">
+                  <input type="text" #accountno="ngModel" [(ngModel)]="entity.accountno" name="accountno" class="form-control"
+                  />
+                </th>
+                <td>
+                  <input type="text" #accountname="ngModel" [(ngModel)]="entity.accountname" name="accountname"
+                    class="form-control" />
+                </td>
+                <td>
+                  <input type="text" #bankcode="ngModel" [(ngModel)]="entity.bankcode" name="bankcode" class="form-control"
+                  />
+                </td>
+                <td>
+                  <input type="text" #bankname="ngModel" [(ngModel)]="entity.bankname" name="bankname" class="form-control"
+                  />
+                </td>
+                <td>
+                  <input type="text" #branchname="ngModel" [(ngModel)]="entity.branchname" name="branchname" class="form-control"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="button" (click)="modalAddEdit.hide()" class="btn btn-danger">Hủy bỏ</button>
+              <button type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Cập nhật</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

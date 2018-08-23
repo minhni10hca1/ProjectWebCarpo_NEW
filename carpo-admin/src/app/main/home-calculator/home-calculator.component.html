@@ -1,0 +1,21 @@
+<form class="form-horizontal form-label-left" #addEditForm="ngForm" (ngSubmit)="saveChanges()"  *ngIf="entity">
+  <div class="form-group">
+    <label class="control-label col-md-3 col-sm-3 col-xs-12 text-danger">device_id</label>
+    <div class="col-md-9 col-sm-9 col-xs-12">
+      <input type="hidden" [(ngModel)]="entity._id" name="id" />
+      <input type="text" #device_id="ngModel" [(ngModel)]="entity.device_id" name="device_id" class="form-control">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="control-label col-md-3 col-sm-3 col-xs-12 text-danger">total_km_yesterday </label>
+    <div class="col-md-9 col-sm-9 col-xs-12">
+        <input type="number" #total_km_yesterday="ngModel" [(ngModel)]="entity.total_km_yesterday" name="total_km_yesterday" class="form-control">
+      </div>
+  </div>
+  <div class="ln_solid"></div>
+  <div class="form-group">
+    <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+      <button type="submit" class="btn btn-success" >Lưu lại</button>
+    </div>
+  </div>
+</form>

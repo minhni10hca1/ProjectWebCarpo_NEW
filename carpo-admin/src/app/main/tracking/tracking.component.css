@@ -1,0 +1,64 @@
+#map {
+  min-height: 100%;
+  width: 100%;
+  margin: 0px;
+  position: relative;
+  height: 100vh;
+}
+
+.scrollbar {
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-right: 1px;
+  min-height: 400px;
+  position: relative;
+  height: 100vh;
+}
+
+#driver_scrollbar::-webkit-scrollbar-track {
+  background-color: #F5F5F5;
+  border-radius: 5px;
+}
+
+#driver_scrollbar::-webkit-scrollbar {
+  width: 5px;
+  background-color: #F5F5F5;
+}
+
+#driver_scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3366FF;
+  border-radius: 5px;
+  background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.5) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 75%, transparent);
+}
+
+/*legend*/
+#legend {
+  background: white;
+  padding: 0px 7px;
+  border-radius: 2px;
+  -webkit-box-shadow: 0px 0px 5px 0px #d2d6de;
+  -moz-box-shadow: 0px 0px 5px 0px #d2d6de;
+  box-shadow: 0px 0px 5px 0px #d2d6de;
+  font-weight: bold;
+  color: #666666;
+  margin: 10px;
+}
+.moving path {
+  fill: #00a65a;
+}
+.moving {
+  color: #00a65a;
+}
+.standing path {
+  fill: #f39c12;
+}
+.standing {
+  color: #f39c12;
+}
+.inactive path {
+  fill: #f56954;
+}
+.inactive {
+  color: #f56954;
+}
+/*end legend*/

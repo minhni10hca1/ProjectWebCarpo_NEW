@@ -1,0 +1,15 @@
+<div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+  <div class="menu_section">
+
+    <ul class="nav side-menu">
+      <li><a *ngIf="_authenService.hasPermission_Client()" routerLink="/main/home/index"><i class="fa fa-home"></i> Trang chủ</a>
+      <li *ngFor="let item of functions">
+        <a routerLink="{{item.URL}}" routerLinkActive="active"><i class="fa {{item.IconCss}}"></i> {{item.Name}}</a>
+        <!-- <ul class="nav child_menu">
+          <li *ngFor="let subItem of item.ChildFunctions"><a routerLink="{{subItem.URL}}" >{{subItem.Name}}</a></li>
+        </ul> -->
+      </li>
+    </ul>
+  </div>
+
+</div>

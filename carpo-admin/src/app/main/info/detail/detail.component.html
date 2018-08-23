@@ -1,0 +1,74 @@
+<div class="page-title">
+  <div class="title_left">
+    <h4>Quảng đường đi được</h4>
+  </div>
+</div>
+<div class="clearfix"></div>
+
+<div class="row">
+  <div class="row top_tiles">
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <i class="fa fa-calendar-check-o red"></i>
+        </div>
+        <div class="count">{{totalKmToday}}</div>
+        <h3>Hôm Nay</h3>
+        <p>Tổng km tất cả tài xế hôm nay.</p>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <i class="fa fa-calendar-o blue"></i>
+        </div>
+        <div class="count">{{totalKmMonth}}</div>
+        <h3>Tháng Này</h3>
+        <p>Tổng km tất cả tài xế trong tháng.</p>
+      </div>
+    </div>
+    <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+      <div class="tile-stats">
+        <div class="icon">
+          <i class="fa fa-calendar green"></i>
+        </div>
+        <div class="count">{{totalKmRankDate}}</div>
+        <h3>Khoảng Thời Gian</h3>
+        <p>Tổng km tất cả tài xế trong khoảng thời gian tìm kiếm.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_title">
+      <div class="col-md-2 col-sm-2 col-xs-12 form-group">
+        <input type="text" name="startDate" daterangepicker [options]="dateOptions" (selected)="changeStartDate($event)" [(ngModel)]="filterStartDate"
+          class="form-control" placeholder="Từ ngày">
+        <span class="fa fa-calendar form-control-feedback right" aria-hidden="true"></span>
+      </div>
+      <div class="col-md-2 col-sm-2 col-xs-12 form-group ">
+        <input type="text" name="endDate" daterangepicker [options]="dateOptions" (selected)="changeEndDate($event)" [(ngModel)]="filterEndDate"
+          class="form-control" placeholder="Đến ngày">
+        <span class="fa fa-calendar form-control-feedback right" aria-hidden="true"></span>
+      </div>
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button class="btn btn-danger" routerLink="/main/info/index">Quay lại</button>
+          <button class="btn btn-primary" type="button" (click)="search()">
+            <i class="fa fa-search"></i>&nbsp;&nbsp;Tìm kiếm</button>
+          <button class="btn btn-default" type="button">
+            <i class="fa fa-refresh"></i>&nbsp;&nbsp;Reset</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <table id="cartrackings_table" class="row-border hover">
+      </table>
+    </div>
+  </div>
+</div>

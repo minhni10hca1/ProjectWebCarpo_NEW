@@ -1,0 +1,284 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách hợp đồng
+    </h3>
+  </div>
+
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+        <input type="text" name="filter" [(ngModel)]="filter" (keypress)="search()" class="form-control" placeholder="Tìm kiếm tên hợp đồng...">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button">Tìm!</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="row">
+
+  <div class="clearfix"></div>
+
+  <div class="x_panel">
+    <div class="x_title">
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button class="btn btn-primary" type="button" (click)="showSearchCar()">
+            <i class="fa fa-search"></i>&nbsp;&nbsp;Tìm kiếm hợp đồng theo xe</button>
+          <button class="btn btn-success" *ngIf="_authenService.hasPermission()" (click)="showAdd()" aria-hidden="true">
+            <i class="fa fa-plus"></i>&nbsp;&nbsp;Thêm mới</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <table class="data table table-striped no-margin">
+        <thead>
+          <tr>
+            <th class="col-md-2 col-sm-2 col-xs-2">Tên hợp đồng</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Khách hàng</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Ghi chú</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Từ ngày</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Đến ngày</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">#</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of campaigns">
+            <td>{{item.name}}</td>
+            <td>{{item.customer_id?.company_name}}</td>
+            <td>{{item.descriptions}}</td>
+            <td>{{item.start_time | date:'dd/MM/yyyy'}}</td>
+            <td>{{item.end_time | date:'dd/MM/yyyy'}}</td>
+            <td>
+              <a (click)="showView(item._id)" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Xem chi tiết">
+                <i class="fa fa-folder"></i>
+              </a>
+              <a class="btn btn-primary btn-xs" *ngIf="_authenService.hasPermission()" routerLink="/main/contract/duallist/{{item._id}}"
+                title="Thêm xe vào hợp đồng" aria-hidden="true">
+                <i class="fa fa-car"></i>
+              </a>
+              <a class="btn btn-warning btn-xs" *ngIf="_authenService.hasPermission()" routerLink="/main/contract/carlist/{{item._id}}"
+                title="Danh sách xe" aria-hidden="true">
+                <i class="fa fa-reorder"></i>
+              </a>
+              <a *ngIf="_authenService.hasPermission()" (click)="showEdit(item._id)" class="btn btn-info btn-xs" aria-hidden="true" data-toggle="tooltip"
+                data-placement="top" title="" data-original-title="Chỉnh sửa">
+                <i class="fa fa-pencil"></i>
+              </a>
+              <a *ngIf="_authenService.hasPermission()" (click)="delete(item._id)" class="btn btn-danger btn-xs" aria-hidden="true" data-toggle="tooltip"
+                data-placement="top" title="" data-original-title="Xóa">
+                <i class="fa fa-trash-o"></i>
+              </a>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+      <div *ngIf="campaigns && campaigns.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Thông báo!</strong> Không tìm thấy hợp đồng
+        </div>
+      </div>
+      <div class="col-md-12">
+          <pagination [boundaryLinks]="true" [totalItems]="totalRow" [maxSize]="5" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+          class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div bsModal #addEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Chi tiết hợp đồng</h4>
+        <button type="button" class="close pull-right" (click)="addEditModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left input_mask" novalidate #addEditForm="ngForm" (ngSubmit)="saveChanges(addEditForm)"
+          *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Tên hợp đồng</label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <input type="hidden" [(ngModel)]="entity._id" name="id" />
+              <input type="text" #name="ngModel" [(ngModel)]="entity.name" required minlength="3" name="name" class="form-control">
+              <small [hidden]="name.valid || (name.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập ít nhất 3 ký tự
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Khách hàng</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <ng-select class="form-group" highlightColor="#9575cd" highlightTextColor="#fff" required [options]="customerOptions" [allowClear]="true"
+                name="customer_id" #customer_id="ngModel" [(ngModel)]="entity.customer_id">
+              </ng-select>
+              <small [hidden]="customer_id.valid || (customer_id.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải chọn khách hàng
+              </small>
+              <input type="hidden" [(ngModel)]="entity.customer_id" name="customer_id" class="form-control" />
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Khu vực</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <ng-select class="form-group" highlightColor="#9575cd" highlightTextColor="#fff" required [options]="areaOptions" [allowClear]="true"
+                name="area_code" #area_code="ngModel" [(ngModel)]="entity.area_code">
+              </ng-select>
+              <small [hidden]="area_code.valid || (area_code.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải chọn khu vực
+              </small>
+              <input type="hidden" [(ngModel)]="entity.area_code" name="area_code" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Từ ngày</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #start_time="ngModel" daterangepicker (selected)="changeStartDate($event)" [options]="dateOptions" [(ngModel)]="entity.start_time"
+                name="start_time" class="form-control">
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Đến ngày</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #end_time="ngModel" daterangepicker (selected)="changeEndDate($event)" [options]="dateOptions" [(ngModel)]="entity.end_time"
+                name="end_time" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Số KM</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="number" #total_distance="ngModel" [(ngModel)]="entity.total_distance" name="total_distance" class="form-control"
+              />
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Tổng tiền</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="number" #car_wage="ngModel" [(ngModel)]="entity.car_wage" name="car_wage" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Lat</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="number" #location_lat="ngModel" [(ngModel)]="entity.location_lat" name="location_lat" class="form-control"
+              />
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Lng</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="number" #location_lng="ngModel" [(ngModel)]="entity.location_lng" name="location_lng" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Tổng xe</label>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+              <input type="number" #total_car="ngModel" [(ngModel)]="entity.total_car" name="total_car" class="form-control" />
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Tổng quảng cáo</label>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+              <input type="number" #total_car_advertising="ngModel" [(ngModel)]="entity.total_car_advertising" name="total_car_advertising"
+                class="form-control" />
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Impression</label>
+            <div class="col-md-2 col-sm-2 col-xs-12">
+              <input type="number" #impressionNo="ngModel" [(ngModel)]="entity.impressionNo" name="impressionNo" value="75"
+                class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Ghi chú </label>
+            <div class="col-md-10 col-sm-10 col-xs-12">
+              <textarea #descriptions="ngModel" [(ngModel)]="entity.descriptions" name="descriptions" class="form-control col-md-7 col-xs-12"></textarea>
+            </div>
+          </div>
+
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="button" (click)="addEditModal.hide()" class="btn btn-danger">Hủy bỏ</button>
+              <button type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Lưu lại</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div bsModal #ViewModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myNormalModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Chi tiết hợp đồng</h4>
+        <button type="button" class="close pull-right" (click)="ViewModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive" *ngIf="entityView">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th style="width:50%">Tên hợp đồng:</th>
+                <td>{{entityView.name}}</td>
+              </tr>
+              <tr>
+                <th>Khách hàng: </th>
+                <td>{{entityView.customer_id?.company_name}}</td>
+              </tr>
+              <tr>
+                <th>Từ ngày: </th>
+                <td>{{entityView.start_time | date:'dd/MM/yyyy'}}</td>
+              </tr>
+              <tr>
+                <th>Đến ngày: </th>
+                <td>{{entityView.end_time | date:'dd/MM/yyyy'}}</td>
+              </tr>
+              <tr>
+                <th>Số KM: </th>
+                <td>{{entityView.total_distance | number}}</td>
+              </tr>
+              <tr>
+                <th>Tổng xe: </th>
+                <td>{{entityView.total_car | number}}</td>
+              </tr>
+              <tr>
+                <th>Tổng quảng cáo: </th>
+                <td>{{entityView.total_car_advertising | number}}</td>
+              </tr>
+              <tr>
+                <th>Tổng tiền: </th>
+                <td>{{entityView.car_wage | number}}</td>
+              </tr>
+              <tr>
+                <th>Ghi chú: </th>
+                <td>{{entityView.descriptions}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div bsModal #SearchCarModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myNormalModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Tìm kiếm hợp đồng</h4>
+        <button type="button" class="close pull-right" (click)="SearchCarModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <app-contract-car-find></app-contract-car-find>
+      </div>
+    </div>
+  </div>
+</div>

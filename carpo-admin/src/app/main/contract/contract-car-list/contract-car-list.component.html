@@ -1,0 +1,68 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách xe hợp đồng
+    </h3>
+  </div>
+  <div class="title_right">
+    <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+      <div class="input-group">
+        <input type="text" name="filter" [(ngModel)]="filter" (keypress)="search()" class="form-control" placeholder="Tìm kiếm tên thiết bị">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="button">Tìm!</button>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_title">
+      <h2>{{title}}
+      </h2>
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button class="btn btn-primary" routerLink="/main/contract/index">Quay lại</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <table class="table table-striped projects">
+        <thead>
+          <tr>
+            <th class="col-md-2 col-sm-2 col-xs-2">Tên thiết bị</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Số xe</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Loại</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Màu sắc</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Trạng thái</th>
+            <th class="col-md-2 col-sm-2 col-xs-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of cars">
+            <td>{{item.device_id}}</td>
+            <td>{{item.license_plate}}</td>
+            <td>{{item.car_manufacturer}}</td>
+            <td>{{item.car_color}}</td>
+            <td *ngIf="item.active === true">
+              <span class="label label-success">Hoạt động</span>
+            </td>
+            <td *ngIf="item.active === false">
+              <span class="label label-warning">Đã nghỉ</span>
+            </td>
+            <td>
+              <a *ngIf="_authenService.hasPermission()" (click)="delete(item._id)" class="btn btn-danger btn-xs" aria-hidden="true">
+                <i class="fa fa-trash-o"></i> Delete </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="col-md-12">
+          <pagination [boundaryLinks]="true" [totalItems]="totalRow" [maxSize]="5" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+          class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+      </div>
+    </div>
+  </div>
+</div>

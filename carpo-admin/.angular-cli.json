@@ -1,0 +1,98 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "project": {
+    "name": "carpo-admin",
+    "ejected": false
+  },
+  "apps": [
+    {
+      "root": "src",
+      "outDir": "dist",
+      "assets": [
+        "assets",
+        "favicon.ico"
+      ],
+      "index": "index.html",
+      "main": "main.ts",
+      "polyfills": "polyfills.ts",
+      "test": "test.ts",
+      "tsconfig": "tsconfig.app.json",
+      "testTsconfig": "tsconfig.spec.json",
+      "prefix": "app",
+      "styles": [
+        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "../node_modules/font-awesome/css/font-awesome.min.css",
+        "../node_modules/alertifyjs/build/css/alertify.css",
+        "../node_modules/alertifyjs/build/css/themes/default.css",
+        "../node_modules/switchery/standalone/switchery.css",
+        "../node_modules/bootstrap-daterangepicker/daterangepicker.css",
+        "../node_modules/icheck/skins/flat/green.css",
+
+        "../node_modules/datatables.net-dt/css/jquery.dataTables.css",
+        "../node_modules/datatables.net-colreorder-dt/css/colReorder.dataTables.css",
+        "../node_modules/datatables.net-responsive-dt/css/responsive.dataTables.css",
+        "../node_modules/datatables.net-buttons-dt/css/buttons.dataTables.css",
+        "../node_modules/angular2-lightbox/lightbox.css",
+
+        "../src/assets/css/custom.css",
+        "styles.css"
+      ],
+      "scripts": [
+        "../node_modules/jquery/dist/jquery.js",
+        "../node_modules/jquery/dist/jquery.min.js",
+        "../node_modules/bootstrap/dist/js/bootstrap.min.js",
+        "../node_modules/fastclick/lib/fastclick.js",
+        "../node_modules/alertifyjs/build/alertify.js",
+        "../node_modules/switchery/standalone/switchery.js",
+        "../node_modules/bootstrap-daterangepicker/daterangepicker.js",
+        "../node_modules/moment/moment.js",
+        "../node_modules/icheck/icheck.js",
+        "../node_modules/datatables.net/js/jquery.dataTables.js",
+        "../node_modules/datatables.net-colreorder/js/dataTables.colReorder.js",
+        "../node_modules/datatables.net-responsive/js/dataTables.responsive.js",
+
+        "../node_modules/jszip/dist/jszip.js",
+        "../node_modules/datatables.net-buttons/js/dataTables.buttons.js",
+        "../node_modules/datatables.net-buttons/js/buttons.colVis.js",
+        "../node_modules/datatables.net-buttons/js/buttons.flash.js",
+        "../node_modules/datatables.net-buttons/js/buttons.html5.js",
+        "../node_modules/datatables.net-buttons/js/buttons.print.js",
+
+        "../node_modules/chart.js/dist/chart.js"
+      ],
+      "environmentSource": "environments/environment.ts",
+      "environments": {
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts"
+      }
+    }
+  ],
+  "e2e": {
+    "protractor": {
+      "config": "./protractor.conf.js"
+    }
+  },
+  "lint": [
+    {
+      "project": "src/tsconfig.app.json"
+    },
+    {
+      "project": "src/tsconfig.spec.json"
+    },
+    {
+      "project": "e2e/tsconfig.e2e.json"
+    }
+  ],
+  "test": {
+    "karma": {
+      "config": "./karma.conf.js"
+    }
+  },
+  "defaults": {
+    "styleExt": "css",
+    "component": {},
+    "serve": {
+      "port": 8080
+    }
+  }
+}

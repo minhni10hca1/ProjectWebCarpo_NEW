@@ -1,0 +1,53 @@
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_content">
+      <div class="row">
+        <div class="col-sm-3 mail_list_column">
+          <div class="input-group">
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-primary" (click)="loadListCarByCustomerID()" >Go!</button>
+            </span>
+            <input  [(ngModel)]="driverFilter.license_plate" class="form-control" name="search" placeholder="Tìm số xe...">
+          </div>
+          <div class="clearfix" style="margin-top: 10px;"></div>
+          <div class="scrollbar" id="driver_scrollbar">
+            <li *ngFor="let driver of listDriversConvert | filterBy: driverFilter" style="list-style:none;">
+              <a style="cursor: pointer;"  (click)="showMapOneDriver(driver.Id)" >
+                <div class="mail_list" *ngIf="checkUndefined === false">
+                  <div class="left">
+                    <i class="fa fa-star"></i>
+                  </div>
+                  <div class="right">
+                    <p>{{driver?.Id}}
+                      <small *ngIf="driver?.Status === 1 && driver?.Speed >0 ">
+                        <span class="label label-success">xe chạy</span>
+                      </small>
+                      <small *ngIf="driver?.Status === 1 && driver?.Speed ===0 ">
+                        <span class="label label-warning">xe dừng</span>
+                      </small>
+                      <small *ngIf="driver?.Status === 0">
+                        <span class="label label-danger">xe tắt máy</span>
+                      </small>
+                    </p>
+                    <p>{{driver?.name}} - {{driver?.license_plate}}</p>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li *ngIf="checkUndefined === true" style="list-style:none;">
+              <div class="alert alert-info">
+                <strong>Thông báo!</strong> Không tìm thấy tài xế
+              </div>
+            </li>
+          </div>
+        </div>
+        <div class="col-sm-9 mail_view">
+          <div id="map"></div>
+          <div class="" id="legend" style="z-index: 0; position: absolute; right: 0px; top: 126px;"><h4>Ký hiệu</h4><p class="moving"><svg baseProfile="basic" xmlns="http://www.w3.org/2000/svg" style="margin: 0 0 -5px 0" width="20" height="20" viewBox="8 0 40 48"> <path fill="#d2d6de" d="M24 0c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z"></path></svg><span>Xe đang chạy</span></p><p class="standing"><svg baseProfile="basic" xmlns="http://www.w3.org/2000/svg" style="margin: 0 0 -5px 0" width="20" height="20" viewBox="8 0 40 48"> <path fill="#d2d6de" d="M24 0c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z"></path></svg><span>Xe đang dừng</span></p><p class="inactive"><svg baseProfile="basic" xmlns="http://www.w3.org/2000/svg" style="margin: 0 0 -5px 0" width="20" height="20" viewBox="8 0 40 48"> <path fill="#d2d6de" d="M24 0c-9.8 0-17.7 7.8-17.7 17.4 0 15.5 17.7 30.6 17.7 30.6s17.7-15.4 17.7-30.6c0-9.6-7.9-17.4-17.7-17.4z"></path></svg><span>Xe tắt máy</span></p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

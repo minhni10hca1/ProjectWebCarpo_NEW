@@ -1,0 +1,143 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Dashboard
+      <code>Bạn đang xem : {{titleContract}}</code>
+    </h3>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-xs-12">
+    <!-- top tiles -->
+    <ul class="list-unstyled">
+      <li *ngFor="let item of campaigns">
+        <div class="col-md-4 col-sm-4 col-xs-12 profile_details">
+          <div class="well profile_view">
+            <div class="col-sm-12">
+              <h4 class="brief">
+                <i>{{item.name}}</i>
+              </h4>
+              <div class="left col-xs-8">
+                <h2>{{item.areaname}}</h2>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fa fa-calendar"></i> Từ ngày: {{item.start_time}}</li>
+                  <li>
+                    <i class="fa fa-calendar"></i> Đến ngày: {{item.end_time}}</li>
+                </ul>
+              </div>
+              <div class="right col-xs-4 text-center">
+                <a id="xemthongke" class="btn btn-app" routerLinkActive="active" (click)="showChart(item.name, item.cars, item.impressionNo,item.start_time,item.end_time,1)" *ngIf="user.role=='Client' ">
+                  <i class="fa fa-bar-chart blue"></i> Xem thống kê
+                </a>
+              </div>
+            </div>
+            <div class="col-xs-12 bottom">
+              <div class="col-xs-12 col-sm-6 emphasis">
+                <p class="ratings">
+                  <a>
+                    <span class="fa fa-user"></span>
+                  </a>
+                  <!-- <a>Tài xế: {{item.total_car}}</a> -->
+                  <a>Tài xế: {{item.total_car}}</a>
+                </p>
+              </div>
+              <div class="col-xs-12 col-sm-6 emphasis">
+                <p class="ratings" style="text-align: right">
+                  <a *ngIf="item.status === true" class="value text-success">Đang hoạt động</a>
+                  <a *ngIf="item.status === false" class="value text-danger">Đã hết hạn</a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <!-- /top tiles -->
+    <div class="clearfix"></div>
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="row top_tiles">
+          <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+            <div class="tile-stats">
+              <div class="icon">
+                <i class="fa fa-eye red"></i>
+              </div>
+              <div class="count" id="myTotalImpression" #myTotalImpression >{{totalImpression}}</div>
+              <h3>Tổng Impression</h3>
+            </div>
+          </div>
+          <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+            <div class="tile-stats">
+              <div class="icon">
+                <i class="fa fa-road blue"></i>
+              </div>
+              <div class="count" id="myTotalDistance" #myTotalDistance >{{totalDistance}}</div>
+              <h3>Tổng Km đã chạy</h3>
+            </div>
+          </div>
+          <div class="animated flipInY col-lg-4 col-md-4 col-sm-4 col-xs-12">
+            <div class="tile-stats">
+              <div class="icon">
+                <i class="fa fa-user green"></i>
+              </div>
+              <div class="count" id="mytotalDriver" #mytotalDriver >{{totalDriver}}</div>
+              <h3>Tổng tài xế</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="x_panel tile">
+          <div class="x_title">
+            <h2 class="box-title">
+              <i class="fa fa-user fa-fw"></i>Tài xế chạy nhiều nhất</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div *ngIf="driverChart" id="divDriverChart">
+              <canvas id="driverCanvas">{{ driverChart }}</canvas>
+            </div>
+            <div *ngIf="driverChart && driverChart.length == 0" class="col-md-12">
+              <div class="alert alert-info">
+                <strong>Thông báo!</strong> Không tìm thấy dữ liệu
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 col-sm-6 col-xs-12">
+        <div class="x_panel tile">
+          <div class="x_title">
+            <h2 class="box-title">
+              <i class="fa fa-road fa-fw"></i>Biểu đồ phân bố theo khu vực</h2>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div class="x_content">
+              <div *ngIf="districtChart" id="divDistrictChart">
+                <canvas id="districtCanvas">{{ districtChart }}</canvas>
+              </div>
+              <div *ngIf="districtChart && districtChart.length == 0" class="col-md-12">
+                <div class="alert alert-info">
+                  <strong>Thông báo!</strong> Không tìm thấy dữ liệu
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+
+            <!-- <canvas baseChart [data]="pieChartData" [labels]="pieChartLabels" [chartType]="pieChartType" (chartHover)="chartHovered($event)"
+              (chartClick)="chartClicked($event)" [options]="pieChartOptions" [colors]="pieChartColors" [legend]="pieChartLegend"></canvas> -->
+
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

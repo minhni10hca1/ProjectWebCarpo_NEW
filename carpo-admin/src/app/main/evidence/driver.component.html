@@ -1,0 +1,104 @@
+<div class="page-title">
+  <div class="title_left" style="width: 100%;padding-bottom: 20px;padding-top: 10px;">  
+    <div class="col-md-12">
+      <div class="col-md-3">
+        <h3>Danh sách hợp đồng
+        </h3>
+      </div>
+      <div class="col-md-9">
+        <select class="form-control" name="campaign_id" (change)="selectedCampaign($event)">
+          <option value="">--Chọn hợp đồng--</option>
+          <option *ngFor="let x of campaigns" [value]="x._id">{{x.name}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="col-md-12">
+  <div class="col-sm-3 mail_list_column">
+    <div class="input-group">
+      <input [(ngModel)]="driverFilter.license_plate" class="form-control" name="search" placeholder="Tìm số xe...">
+    </div>
+    <div class="clearfix" style="margin-top: 10px;"></div>
+    <div class="scrollbar" id="driver_scrollbar">
+      <li *ngFor="let item of driversPersonnalScroll | filterBy: driverFilter; let i=index" style="list-style:none;">
+        <a style="cursor: pointer;" (click)="showInfoDriver(item.user_id._id)">
+          <div class="mail_list">
+            <div class="left">
+              <i class="fa fa-star"></i>
+            </div>
+            <div class="right">
+              <p>{{item.user_id.fullname}}</p>
+              <p>{{item.car_manufacturer}} - {{item.license_plate}} </p>
+            </div>
+          </div>
+        </a>
+      </li>
+    </div>
+  </div>
+  <div class="col-md-9 mail_view">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>Tài Xế {{drivername}}
+        </h3>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+    <div class="row">
+      <div class="clearfix"></div>
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Hình chứng minh</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <ul class="ace-thumbnails clearfix">
+            <li *ngFor="let item of drivers; let i=index">
+              <a class="cboxElement">
+                <img width="150" height="150" alt="150x150" src="{{item.thumb}}" (click)="open(i)">
+              </a>
+              <div class="tags">
+                {{item.caption}}
+              </div>
+            </li>
+          </ul>
+
+          <div *ngIf="drivers && drivers.length == 0" class="col-md-12">
+            <div class="alert alert-info">
+              <strong>Thông báo!</strong> Không tìm thấy hình ảnh
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="clearfix"></div>
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Hình cá nhân</h2>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <ul class="ace-thumbnails clearfix">
+            <li *ngFor="let item of driversPersonnal; let i=index">
+              <a class="cboxElement">
+                <img width="150" height="150" alt="150x150" src="{{item.thumb}}" (click)="openPersonnal(i)">
+              </a>
+              <div class="tags">
+                {{item.caption}}
+              </div>
+            </li>
+          </ul>
+
+          <div *ngIf="driversPersonnal && driversPersonnal.length == 0" class="col-md-12">
+            <div class="alert alert-info">
+              <strong>Thông báo!</strong> Không tìm thấy hình ảnh
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách hợp đồng
+    </h3>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_content">
+      <table class="data table table-striped no-margin">
+        <thead>
+          <tr>
+            <th class="col-md-2 col-sm-2 col-xs-2">Tên hợp đồng</th>
+            <th class="col-md-4 col-sm-4 col-xs-4">Ghi chú</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Từ ngày</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">Đến ngày</th>
+            <th class="col-md-2 col-sm-2 col-xs-2">#</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of campaigns">
+            <td>{{item.name}}</td>
+            <td>{{item.descriptions}}</td>
+            <td>{{item.start_time | date:'dd/MM/yyyy'}}</td>
+            <td>{{item.end_time | date:'dd/MM/yyyy'}}</td>
+            <td>
+              <a (click)="showView(item._id)" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="" data-original-title="Xem chi tiết">
+                <i class="fa fa-folder"></i>&nbsp;&nbsp;Xem
+              </a>
+              <a class="btn btn-primary btn-xs" routerLink="/main/info/detail/{{item._id}}"
+                title="Danh sách xe" aria-hidden="true">
+                <i class="fa fa-car"></i>&nbsp;&nbsp;Xe
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="campaigns && campaigns.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Thông báo!</strong> Không tìm thấy hợp đồng
+        </div>
+      </div>
+      <div class="col-md-12">
+          <pagination [boundaryLinks]="true" [totalItems]="totalRow" [maxSize]="5" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+          class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div bsModal #ViewModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myNormalModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Chi tiết hợp đồng</h4>
+        <button type="button" class="close pull-right" (click)="ViewModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="table-responsive" *ngIf="entityView">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th style="width:50%">Tên hợp đồng:</th>
+                <td>{{entityView.name}}</td>
+              </tr>
+              <tr>
+                <th>Từ ngày: </th>
+                <td>{{entityView.start_time | date:'dd/MM/yyyy'}}</td>
+              </tr>
+              <tr>
+                <th>Đến ngày: </th>
+                <td>{{entityView.end_time | date:'dd/MM/yyyy'}}</td>
+              </tr>
+              <tr>
+                <th>Số KM: </th>
+                <td>{{entityView.total_distance | number}}</td>
+              </tr>
+              <tr>
+                <th>Tổng xe: </th>
+                <td>{{entityView.total_car | number}}</td>
+              </tr>
+              <tr>
+                <th>Tổng quảng cáo: </th>
+                <td>{{entityView.total_car_advertising | number}}</td>
+              </tr>
+              <tr>
+                <th>Tổng tiền: </th>
+                <td>{{entityView.car_wage | number}}</td>
+              </tr>
+              <tr>
+                <th>Ghi chú: </th>
+                <td>{{entityView.descriptions}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

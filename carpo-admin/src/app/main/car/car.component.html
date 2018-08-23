@@ -1,0 +1,170 @@
+<div class="page-title">
+  <div class="title_left">
+    <h3>Danh sách xe
+    </h3>
+  </div>
+</div>
+
+<div class="clearfix"></div>
+<div class="row">
+  <div class="clearfix"></div>
+  <div class="x_panel">
+    <div class="x_title">
+      <div class="col-md-4 col-sm-4 col-xs-12 form-group ">
+        <input type="text" name="filterDevice_id" [(ngModel)]="filterDevice_id" class="form-control" placeholder="Tên thiết bị">
+      </div>
+      <div class="col-md-4 col-sm-4 col-xs-12 form-group ">
+        <input type="text" name="filterLicense_plate" [(ngModel)]="filterLicense_plate" class="form-control" placeholder="Biển số xe">
+      </div>
+      <ul class="nav navbar-right panel_toolbox">
+        <li>
+          <button class="btn btn-primary" type="button" (click)="search()">
+            <i class="fa fa-search"></i>&nbsp;&nbsp;Tìm</button>
+          <button class="btn btn-default" type="button" (click)="reset()">
+            <i class="fa fa-refresh"></i>&nbsp;&nbsp;Reset</button>
+          <button *ngIf="_authenService.hasPermission()" class="btn btn-success" (click)="showAdd()" aria-hidden="true">
+            <i class="fa fa-plus"></i>&nbsp;&nbsp;Thêm mới</button>
+        </li>
+      </ul>
+      <div class="clearfix"></div>
+    </div>
+    <div class="x_content">
+      <table class="table table-striped table-bordered dt-responsive nowrap">
+        <thead>
+          <tr>
+            <!-- <th class="col-md-1 col-sm-1 col-xs-1"></th> -->
+            <th>Thiết bị</th>
+            <th>Biển số</th>
+            <th>Loại xe</th>
+            <th>Người dùng</th>
+            <th>Điện thoại</th>
+            <th>Đội trưởng</th>
+            <th>Trạng thái</th>
+            <th>#</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of cars">
+            <td>{{item.device_id}}</td>
+            <td>{{item.license_plate}}</td>
+            <td>{{item.car_manufacturer}}</td>
+            <td>{{item.user_id?.fullname}}</td>
+            <td>{{item.user_id?.phone}}</td>
+            <td>{{item.group_id?.full_name}}</td>
+            <td *ngIf="item.active === true">
+              <span class="label label-success">Đang chạy</span>
+            </td>
+            <td *ngIf="item.active === false">
+              <span class="label label-warning">Chưa chạy</span>
+            </td>
+            <td>
+              <a *ngIf="_authenService.hasPermission()" (click)="showEdit(item._id)" class="btn btn-info btn-xs" aria-hidden="true">
+                <i class="fa fa-pencil"></i>
+              </a>
+              <a *ngIf="_authenService.hasPermission()" (click)="delete(item._id)" class="btn btn-danger btn-xs" aria-hidden="true">
+                <i class="fa fa-trash-o"></i>
+              </a>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+      <div *ngIf="cars && cars.length == 0" class="col-md-12">
+        <div class="alert alert-info">
+          <strong>Thông báo!</strong> Không tìm thấy xe
+        </div>
+      </div>
+      <div class="col-md-12">
+        <pagination [boundaryLinks]="true" [totalItems]="totalRow" [maxSize]="5" [itemsPerPage]="pageSize" (pageChanged)="pageChanged($event)"
+          class="pagination-sm" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;"></pagination>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div bsModal #addEditModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title pull-left">Chi tiết xe</h4>
+        <button type="button" class="close pull-right" (click)="addEditModal.hide()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="form-horizontal form-label-left" novalidate #addEditForm="ngForm" (ngSubmit)="saveChanges(addEditForm)" *ngIf="entity">
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Tên thiết bị</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="hidden" [(ngModel)]="entity._id" name="id" />
+              <input type="text" #device_id="ngModel" [(ngModel)]="entity.device_id" required name="device_id" class="form-control">
+              <small [hidden]="device_id.valid || (device_id.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập tên
+              </small>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Biển số</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #license_plate="ngModel" [(ngModel)]="entity.license_plate" required name="license_plate" class="form-control">
+              <small [hidden]="device_id.valid || (device_id.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải nhập biển số xe
+              </small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Loại xe</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #car_manufacturer="ngModel" [(ngModel)]="entity.car_manufacturer" name="car_manufacturer" class="form-control">
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Màu sắc</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <input type="text" #car_color="ngModel" [(ngModel)]="entity.car_color" name="car_color" class="form-control">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Đội trưởng</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <ng-select class="form-group" highlightColor="#9575cd" highlightTextColor="#fff" [options]="cargroupOptions" [allowClear]="true"
+                name="group_id" #group_id="ngModel" [(ngModel)]="entity.group_id">
+              </ng-select>
+              <input type="hidden" [(ngModel)]="entity.group_id" name="group_id" class="form-control" />
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12 text-danger">Người dùng</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <ng-select required class="form-group" highlightColor="#9575cd" highlightTextColor="#fff" [options]="comboUserOptions" [allowClear]="true"
+                name="user_id" #user_id="ngModel" [(ngModel)]="entity.user_id">
+              </ng-select>
+              <small [hidden]="user_id.valid || (user_id.pristine && !addEditForm.submitted)" class="text-danger">
+                Bạn phải chọn người dùng
+              </small>
+              <input type="hidden" [(ngModel)]="entity.user_id" name="user_id" class="form-control" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">TT Làm việc</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <select class="form-control" #status="ngModel" name="status" [(ngModel)]="entity.status">
+                <option value="ACTIVE">Đang làm việc</option>
+                <option value="INACTIVE">Đã nghỉ việc</option>
+              </select>
+            </div>
+            <label class="control-label col-md-2 col-sm-2 col-xs-12">Hợp đồng</label>
+            <div class="col-md-4 col-sm-4 col-xs-12">
+              <select class="form-control" name="campaign_id" #campaign_id="ngModel" [(ngModel)]="entity.campaign_id">
+                <option value="">--Chọn hợp đồng--</option>
+                <option *ngFor="let x of campaigns" [value]="x._id">{{x.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+              <button type="button" (click)="addEditModal.hide()" class="btn btn-danger">Hủy bỏ</button>
+              <button type="submit" class="btn btn-success" [disabled]="!addEditForm.form.valid">Lưu lại</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
