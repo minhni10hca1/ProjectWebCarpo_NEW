@@ -1,4 +1,29 @@
 <div class="page-title">
+  <div>
+    <h3>
+      <div class="col-md-3 col-sm-3 col-xs-12 form-group ">Chọn điều kiện xem: </div>
+      <code>
+          <div class="col-md-3 col-sm-3 col-xs-12 form-group ">
+        <select class="form-control" name="filterRoleCode" >
+          <option value="0"> --Vui lòng chọn--</option>
+          <option value="1">Còn Hạng</option>
+          <option value="2">Hết Hạng</option>
+        </select>
+        </div>
+      </code>
+      <code>
+          <div class="col-md-3 col-sm-3 col-xs-12 form-group ">
+              <select class="form-control" name="label" >
+                  <option *ngFor="let x of areaOptions" [value]="x.value">{{x.label}}</option>
+              </select>    
+          </div>
+      </code>
+    </h3>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="clearfix"></div>
+<div class="page-title">
   <div class="title_left">
     <h3>Dashboard
       <code>Bạn đang xem : {{titleContract}}</code>
@@ -28,7 +53,8 @@
                 </ul>
               </div>
               <div class="right col-xs-4 text-center">
-                <a id="xemthongke" class="btn btn-app" routerLinkActive="active" (click)="showChart(item.name, item.cars, item.impressionNo,item.start_time,item.end_time,1)" *ngIf="user.role=='Client' ">
+                <a id="xemthongke" class="btn btn-app" routerLinkActive="active" (click)="showChart(item.name, item.cars, item.impressionNo,item.start_time,item.end_time,1)"
+                  *ngIf="user.role=='Client' ">
                   <i class="fa fa-bar-chart blue"></i> Xem thống kê
                 </a>
               </div>
@@ -65,7 +91,7 @@
               <div class="icon">
                 <i class="fa fa-eye red"></i>
               </div>
-              <div class="count" id="myTotalImpression" #myTotalImpression >{{totalImpression}}</div>
+              <div class="count" id="myTotalImpression" #myTotalImpression>{{totalImpression}}</div>
               <h3>Tổng Impression</h3>
             </div>
           </div>
@@ -74,7 +100,7 @@
               <div class="icon">
                 <i class="fa fa-road blue"></i>
               </div>
-              <div class="count" id="myTotalDistance" #myTotalDistance >{{totalDistance}}</div>
+              <div class="count" id="myTotalDistance" #myTotalDistance>{{totalDistance}}</div>
               <h3>Tổng Km đã chạy</h3>
             </div>
           </div>
@@ -83,7 +109,7 @@
               <div class="icon">
                 <i class="fa fa-user green"></i>
               </div>
-              <div class="count" id="mytotalDriver" #mytotalDriver >{{totalDriver}}</div>
+              <div class="count" id="mytotalDriver" #mytotalDriver>{{totalDriver}}</div>
               <h3>Tổng tài xế</h3>
             </div>
           </div>

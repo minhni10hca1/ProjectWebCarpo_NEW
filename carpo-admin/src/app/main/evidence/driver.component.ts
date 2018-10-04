@@ -89,6 +89,7 @@ export class DriverComponent implements OnInit {
           let itemname = '';
           response.data.forEach(function(item) {
             // this.drivername = item.user_id.fullname;
+            console.log('item',item);
             let type = item.type;
             itemname = item.user_id.fullname;
             const album = {
@@ -108,7 +109,9 @@ export class DriverComponent implements OnInit {
           this.drivername = itemname;
          // console.log('this.drivername',this.drivername);
           this.drivers = resDrivers;
+          console.log('this.drivers',this.drivers);
           this.driversPersonnal = resDriversPersonnal;
+          console.log('this.resDriversPersonnal',this.driversPersonnal);
           this._ng4LoadingSpinnerService.hide();
         } else {
           this.drivers = [];
@@ -136,6 +139,7 @@ public loadListUserScroll() {
 public showInfoDriver(Id: string) {
   //console.log('show info:' + Id );
    this.p_userId = Id;
+   console.log('user_id_new',this.p_userId);
    this.search();
 }
 

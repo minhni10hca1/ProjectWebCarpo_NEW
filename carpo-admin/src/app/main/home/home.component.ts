@@ -12,6 +12,7 @@ import * as numeral from 'numeral';
 import * as Chart from 'chart.js';
 import * as CountUp from 'countup.js';
 import { element } from 'protractor';
+import { IOption } from 'ng-select';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -27,6 +28,11 @@ export class HomeComponent implements OnInit {
   totalImpression: number = 0;
   totalDriver: number = 0;
   private user: any;
+
+  public areaOptions: Array<IOption> = [{
+    label: '--Vui lòng chọn--',
+    value: ''
+  }];
 
   //bar chart
   resultbarChartData: IDataChart[] = [];
@@ -66,6 +72,8 @@ export class HomeComponent implements OnInit {
     // this.numAnim.start(function() {
     //   this.numAnim.update(this.endVal);
     // });
+    this.loadComboArea(); // load combo khu vực
+    console.log("areaOptions :" + JSON.stringify(this.areaOptions));
     this.user = this._authenService.getLoggedInUser();
     this.totalDistance = 0;
     this.totalImpression = 0;
@@ -74,7 +82,22 @@ export class HomeComponent implements OnInit {
     if (this.user.role == "Client") {
       this.getCampaign(); //lấy ds hợp đồng
     }
+    // load combo area
+    
   }
+
+    //load area select
+    private loadComboArea() {
+      this._dataService.get('/areas/getCombo').subscribe((response: any[]) => {
+        response.forEach(i => {
+          this.areaOptions.push(
+            {
+              "label": i.name,
+              "value": i.code
+            });
+        });
+      }, error => this._dataService.handleError(error));
+    }
 
   public getCampaign() {
     this._dataService.get('/trackings/getCampaignByCustomerID')
@@ -196,58 +219,58 @@ export class HomeComponent implements OnInit {
       }
     }, error => this._dataService.handleError(error));
 
-    //vẽ pie chart theo điểm
-    this._dataService.post('/trackings/getPieChartbyDeviceIds_Max10', JSON.stringify(this.deviceIdsEntity)).subscribe((response: any) => {
-      if (response.success == 1 && response.data.length > 0) {
-        document.getElementById('divDistrictChart').style.display = 'block';
-        const backgroundColor = [
-          '#2196F3',
-          '#03A9F4',
-          '#F44336',
-          '#E91E63',
-          '#9C27B0',
-          '#4CAF50',
-          '#FFC107',
-          '#00FF00',
-          '#607D8B'
-        ];
-        this.resultpieChartData = response.data;
-        $('#divDistrictChart').html(''); //remove canvas
-        $('#divDistrictChart').html('<canvas id="districtCanvas"></canvas>'); //add lại
-        var pieDistrictOption = {
-          type: 'pie',
-          data: {
-            labels: this.resultpieChartData.map(item => item.label),
-            datasets: [{
-              data: this.resultpieChartData.map(item => item.data),
-              backgroundColor: backgroundColor,
-            }],
-          },
-          options: {
-            legend: { position: 'right' },
-            tooltips: {
-              intersect: false,
-              callbacks: {
-                label: function (tooltipItem, data) {
-                  var dataset = data.datasets[tooltipItem.datasetIndex];
-                  var total = dataset.data.reduce(function (previousValue, currentValue, currentIndex, array) {
-                    return previousValue + currentValue;
-                  });
-                  var currentValue = dataset.data[tooltipItem.index];
-                  var precentage = Math.floor(((currentValue / total) * 100) + 0.5);
-                  return precentage + "%";
-                }
-              }
-            }
-          }
-        };
-        this.districtChart = [];
-        this.districtChart = new Chart('districtCanvas', pieDistrictOption);
-      } else {
-        this.districtChart = [];
-        document.getElementById('divDistrictChart').style.display = 'none';
-      }
-    }, error => this._dataService.handleError(error));
+    // //vẽ pie chart theo điểm
+    // this._dataService.post('/trackings/getPieChartbyDeviceIds_Max10', JSON.stringify(this.deviceIdsEntity)).subscribe((response: any) => {
+    //   if (response.success == 1 && response.data.length > 0) {
+    //     document.getElementById('divDistrictChart').style.display = 'block';
+    //     const backgroundColor = [
+    //       '#2196F3',
+    //       '#03A9F4',
+    //       '#F44336',
+    //       '#E91E63',
+    //       '#9C27B0',
+    //       '#4CAF50',
+    //       '#FFC107',
+    //       '#00FF00',
+    //       '#607D8B'
+    //     ];
+    //     this.resultpieChartData = response.data;
+    //     $('#divDistrictChart').html(''); //remove canvas
+    //     $('#divDistrictChart').html('<canvas id="districtCanvas"></canvas>'); //add lại
+    //     var pieDistrictOption = {
+    //       type: 'pie',
+    //       data: {
+    //         labels: this.resultpieChartData.map(item => item.label),
+    //         datasets: [{
+    //           data: this.resultpieChartData.map(item => item.data),
+    //           backgroundColor: backgroundColor,
+    //         }],
+    //       },
+    //       options: {
+    //         legend: { position: 'right' },
+    //         tooltips: {
+    //           intersect: false,
+    //           callbacks: {
+    //             label: function (tooltipItem, data) {
+    //               var dataset = data.datasets[tooltipItem.datasetIndex];
+    //               var total = dataset.data.reduce(function (previousValue, currentValue, currentIndex, array) {
+    //                 return previousValue + currentValue;
+    //               });
+    //               var currentValue = dataset.data[tooltipItem.index];
+    //               var precentage = Math.floor(((currentValue / total) * 100) + 0.5);
+    //               return precentage + "%";
+    //             }
+    //           }
+    //         }
+    //       }
+    //     };
+    //     this.districtChart = [];
+    //     this.districtChart = new Chart('districtCanvas', pieDistrictOption);
+    //   } else {
+    //     this.districtChart = [];
+    //     document.getElementById('divDistrictChart').style.display = 'none';
+    //   }
+    // }, error => this._dataService.handleError(error));
   }
 }
 
