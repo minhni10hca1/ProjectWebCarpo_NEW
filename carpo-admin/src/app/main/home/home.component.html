@@ -4,8 +4,8 @@
       <div class="col-md-3 col-sm-3 col-xs-12 form-group ">Chọn điều kiện xem: </div>
       <code>
           <div class="col-md-3 col-sm-3 col-xs-12 form-group ">
-        <select class="form-control" name="filterRoleCode" >
-          <option value="0"> --Vui lòng chọn--</option>
+        <select class="form-control" name="SelecCampaign"  (change)="selectedCampaign($event)" >
+          <option value="0">--Xem Tất Cả--</option>
           <option value="1">Còn Hạng</option>
           <option value="2">Hết Hạng</option>
         </select>
@@ -13,7 +13,7 @@
       </code>
       <code>
           <div class="col-md-3 col-sm-3 col-xs-12 form-group ">
-              <select class="form-control" name="label" >
+              <select class="form-control" name="SelecArea" (change)="selectedArea($event)" >
                   <option *ngFor="let x of areaOptions" [value]="x.value">{{x.label}}</option>
               </select>    
           </div>

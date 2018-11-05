@@ -28,10 +28,13 @@ export class HomeComponent implements OnInit {
   totalImpression: number = 0;
   totalDriver: number = 0;
   private user: any;
+  areaCode: String;
+  campaignId: String;
+  status_load: number = 0;
 
   public areaOptions: Array<IOption> = [{
-    label: '--Vui lòng chọn--',
-    value: ''
+    label: '--Xem Tất Cả--',
+    value: '0'
   }];
 
   //bar chart
@@ -65,6 +68,9 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.status_load += 1;
+    this.areaCode = "0";
+    this.campaignId = "0";
 
     this.endVal = 100000000;
     // this.numAnim.reset();
@@ -73,7 +79,7 @@ export class HomeComponent implements OnInit {
     //   this.numAnim.update(this.endVal);
     // });
     this.loadComboArea(); // load combo khu vực
-    console.log("areaOptions :" + JSON.stringify(this.areaOptions));
+    //console.log("areaOptions :" + JSON.stringify(this.areaOptions));
     this.user = this._authenService.getLoggedInUser();
     this.totalDistance = 0;
     this.totalImpression = 0;
@@ -83,21 +89,21 @@ export class HomeComponent implements OnInit {
       this.getCampaign(); //lấy ds hợp đồng
     }
     // load combo area
-    
+
   }
 
-    //load area select
-    private loadComboArea() {
-      this._dataService.get('/areas/getCombo').subscribe((response: any[]) => {
-        response.forEach(i => {
-          this.areaOptions.push(
-            {
-              "label": i.name,
-              "value": i.code
-            });
-        });
-      }, error => this._dataService.handleError(error));
-    }
+  //load area select
+  private loadComboArea() {
+    this._dataService.get('/areas/getCombo').subscribe((response: any[]) => {
+      response.forEach(i => {
+        this.areaOptions.push(
+          {
+            "label": i.name,
+            "value": i.code
+          });
+      });
+    }, error => this._dataService.handleError(error));
+  }
 
   public getCampaign() {
     this._dataService.get('/trackings/getCampaignByCustomerID')
@@ -108,15 +114,67 @@ export class HomeComponent implements OnInit {
           localStorage.removeItem(SystemConstants.CURRENT_USER_CAMPAIGN);
           localStorage.setItem(SystemConstants.CURRENT_USER_CAMPAIGN, JSON.stringify(response.data)); //lưu lại ds hợp đồng của user đăng nhập để dùng cho các form khác khi cần
           let campaign = this.campaigns[0];
+          // console.log('vao');
           this.showChart(campaign.name, campaign.cars, campaign.impressionNo, campaign.start_time, campaign.end_time, 0); //show first khi load init
         } else {
           this.campaigns = [];
         }
       }, error => this._dataService.handleError(error));
   }
+
+  public processChooseCampaignAndArea() {
+    var arrayCampaign = new Array();
+    var arrayChoose = [];
+    arrayCampaign = JSON.parse(localStorage.getItem(SystemConstants.CURRENT_USER_CAMPAIGN));
+    var status_cb = false;
+    if (this.campaignId == "1") {
+      status_cb = true;
+    }
+    if (this.areaCode == "0" && this.campaignId == "0") {
+      this.campaigns = arrayCampaign;
+      return;
+    }
+    for (let item of arrayCampaign) {
+      //console.log("vaoitem" + JSON.stringify(item));
+      if (this.areaCode == "0" && this.campaignId != "0") {
+        if (item.status == status_cb) {
+          arrayChoose.push(item);
+        }
+      } else if (this.areaCode != "0" && this.campaignId == "0") {
+        if (item.areacode == this.areaCode) {
+          arrayChoose.push(item);
+        }
+      }
+      else {
+        if (item.areacode == this.areaCode && item.status == status_cb) {
+          arrayChoose.push(item);
+        }
+      }
+    }
+    this.campaigns = arrayChoose;
+  }
+
+  public selectedArea(event) {
+    this.areaCode = event.target.value;
+    this.processChooseCampaignAndArea();
+  }
+
+  public selectedCampaign(event) {
+    this.campaignId = event.target.value;
+    this.processChooseCampaignAndArea();
+  }
+
   public showChart(campaingname: string, cars: any[], impressionNo: number, start_time: string, end_time: string, numStatus: number) {
     if (this.isLoadFinish == false && numStatus == 1)
       return;
+    console.log("status_load"+ this.status_load);
+    if (this.status_load <= 1) {
+      //console.log("abc");
+      this.isLoadFinish = true;
+      this.status_load +=1 ;
+      return;
+    }
+   
     this.titleContract = campaingname;
     this.deviceIdsEntity.deviceIds = cars;
     this.deviceIdsEntity.impressionNo = impressionNo;
@@ -219,58 +277,58 @@ export class HomeComponent implements OnInit {
       }
     }, error => this._dataService.handleError(error));
 
-    // //vẽ pie chart theo điểm
-    // this._dataService.post('/trackings/getPieChartbyDeviceIds_Max10', JSON.stringify(this.deviceIdsEntity)).subscribe((response: any) => {
-    //   if (response.success == 1 && response.data.length > 0) {
-    //     document.getElementById('divDistrictChart').style.display = 'block';
-    //     const backgroundColor = [
-    //       '#2196F3',
-    //       '#03A9F4',
-    //       '#F44336',
-    //       '#E91E63',
-    //       '#9C27B0',
-    //       '#4CAF50',
-    //       '#FFC107',
-    //       '#00FF00',
-    //       '#607D8B'
-    //     ];
-    //     this.resultpieChartData = response.data;
-    //     $('#divDistrictChart').html(''); //remove canvas
-    //     $('#divDistrictChart').html('<canvas id="districtCanvas"></canvas>'); //add lại
-    //     var pieDistrictOption = {
-    //       type: 'pie',
-    //       data: {
-    //         labels: this.resultpieChartData.map(item => item.label),
-    //         datasets: [{
-    //           data: this.resultpieChartData.map(item => item.data),
-    //           backgroundColor: backgroundColor,
-    //         }],
-    //       },
-    //       options: {
-    //         legend: { position: 'right' },
-    //         tooltips: {
-    //           intersect: false,
-    //           callbacks: {
-    //             label: function (tooltipItem, data) {
-    //               var dataset = data.datasets[tooltipItem.datasetIndex];
-    //               var total = dataset.data.reduce(function (previousValue, currentValue, currentIndex, array) {
-    //                 return previousValue + currentValue;
-    //               });
-    //               var currentValue = dataset.data[tooltipItem.index];
-    //               var precentage = Math.floor(((currentValue / total) * 100) + 0.5);
-    //               return precentage + "%";
-    //             }
-    //           }
-    //         }
-    //       }
-    //     };
-    //     this.districtChart = [];
-    //     this.districtChart = new Chart('districtCanvas', pieDistrictOption);
-    //   } else {
-    //     this.districtChart = [];
-    //     document.getElementById('divDistrictChart').style.display = 'none';
-    //   }
-    // }, error => this._dataService.handleError(error));
+    //vẽ pie chart theo điểm
+    this._dataService.post('/trackings/getPieChartbyDeviceIds_Max10', JSON.stringify(this.deviceIdsEntity)).subscribe((response: any) => {
+      if (response.success == 1 && response.data.length > 0) {
+        document.getElementById('divDistrictChart').style.display = 'block';
+        const backgroundColor = [
+          '#2196F3',
+          '#03A9F4',
+          '#F44336',
+          '#E91E63',
+          '#9C27B0',
+          '#4CAF50',
+          '#FFC107',
+          '#00FF00',
+          '#607D8B'
+        ];
+        this.resultpieChartData = response.data;
+        $('#divDistrictChart').html(''); //remove canvas
+        $('#divDistrictChart').html('<canvas id="districtCanvas"></canvas>'); //add lại
+        var pieDistrictOption = {
+          type: 'pie',
+          data: {
+            labels: this.resultpieChartData.map(item => item.label),
+            datasets: [{
+              data: this.resultpieChartData.map(item => item.data),
+              backgroundColor: backgroundColor,
+            }],
+          },
+          options: {
+            legend: { position: 'right' },
+            tooltips: {
+              intersect: false,
+              callbacks: {
+                label: function (tooltipItem, data) {
+                  var dataset = data.datasets[tooltipItem.datasetIndex];
+                  var total = dataset.data.reduce(function (previousValue, currentValue, currentIndex, array) {
+                    return previousValue + currentValue;
+                  });
+                  var currentValue = dataset.data[tooltipItem.index];
+                  var precentage = Math.floor(((currentValue / total) * 100) + 0.5);
+                  return precentage + "%";
+                }
+              }
+            }
+          }
+        };
+        this.districtChart = [];
+        this.districtChart = new Chart('districtCanvas', pieDistrictOption);
+      } else {
+        this.districtChart = [];
+        document.getElementById('divDistrictChart').style.display = 'none';
+      }
+    }, error => this._dataService.handleError(error));
   }
 }
 

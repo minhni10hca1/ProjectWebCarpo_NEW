@@ -14,20 +14,45 @@
         <span class="fa fa-calendar form-control-feedback right" aria-hidden="true"></span>
       </div>
       <div class="col-md-4 col-sm-4 col-xs-12 form-group ">
-        <angular2-multiselect class="form-group" [data]="itemList" name="filterDevice_Id" #filterDevice_Id="ngModel" [(ngModel)]="selectedItems"
-          [settings]="settings" (onSelect)="onItemSelect($event)" (onDeSelect)="OnItemDeSelect($event)">
-        </angular2-multiselect>
+        <select class="form-control" name="campaign_id" (change)="selectedCampaign($event)">
+          <option value="">--Chọn hợp đồng--</option>
+          <option *ngFor="let x of campaigns" [value]="x._id">{{x.name}}</option>
+        </select>
       </div>
       <ul class="nav navbar-right panel_toolbox">
-        <li>
+        <!-- <li>
           <button type="submit" class="btn btn-primary" (click)="search()">
             <i class="fa fa-search"></i>&nbsp;&nbsp;Xem lịch sử</button>
-        </li>
+        </li> -->
       </ul>
       <div class="clearfix"></div>
     </div>
-    <div class="x_content">
-      <div id="map"></div>
+    <div class="col-md-12">
+      <div class="col-md-9">
+        <div id="map">
+        </div>
+      </div>
+      <div class="col-sm-3 mail_list_column">
+        <div class="input-group">
+          <input [(ngModel)]="driverFilter.license_plate" class="form-control" name="search" placeholder="Tìm số xe...">
+        </div>
+        <div class="clearfix" style="margin-top: 10px;"></div>
+        <div class="scrollbar" id="driver_scrollbar">
+          <li *ngFor="let item of driversPersonnalScroll | filterBy: driverFilter; let i=index" style="list-style:none;">
+            <a style="cursor: pointer;" (click)="searchByCondition(item.device_id)">
+              <div class="mail_list">
+                <div class="left">
+                  <i class="fa fa-star"></i>
+                </div>
+                <div class="right">
+                  <p>{{item.user_id.fullname}}</p>
+                  <p>{{item.car_manufacturer}} - {{item.license_plate}} </p>
+                </div>
+              </div>
+            </a>
+          </li>
+        </div>
+      </div>
     </div>
   </div>
 </div>

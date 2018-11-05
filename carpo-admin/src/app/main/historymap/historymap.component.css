@@ -9,4 +9,73 @@ agm-map {
   height: 100vh;
 }
 
+.ace-thumbnails {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ace-thumbnails>li {
+  float: left;
+  overflow: hidden;
+  margin: 2px;
+  border: 2px solid #eee !important;
+}
+
+.ace-thumbnails>li, .ace-thumbnails>li>:first-child {
+  display: block;
+  position: relative;
+}
+
+.ace-thumbnails>li, .ace-thumbnails>li>:first-child {
+  display: block;
+  position: relative;
+}
+
+img {
+  vertical-align: middle;
+}
+.ace-thumbnails>li .tags {
+  display: inline-block;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  overflow: visible;
+  direction: rtl;
+  padding: 0;
+  margin: 0;
+  height: auto;
+  width: auto;
+  background-color: transparent;
+  border-width: 0;
+  vertical-align: inherit;
+  color: #fff !important;
+  background-color: #000;
+}
+
+.scrollbar {
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin-right: 1px;
+  min-height: 400px;
+  position: relative;
+  height: 100vh;
+}
+
+#driver_scrollbar::-webkit-scrollbar-track {
+  background-color: #F5F5F5;
+  border-radius: 5px;
+}
+
+#driver_scrollbar::-webkit-scrollbar {
+  width: 5px;
+  background-color: #F5F5F5;
+}
+
+#driver_scrollbar::-webkit-scrollbar-thumb {
+  background-color: #3366FF;
+  border-radius: 5px;
+  background-image: -webkit-linear-gradient(0deg, rgba(255, 255, 255, 0.5) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.5) 75%, transparent 75%, transparent);
+}
+
 

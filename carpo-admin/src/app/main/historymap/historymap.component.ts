@@ -5,7 +5,12 @@ import { NotificationService } from '../../core/services/notification.service';
 import { UtilityService } from '../../core/services/utility.service';
 import { MessageContstants } from '../../core/common/message.constants';
 import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { IOption } from 'ng-select';
+import {CommonModule} from "@angular/common";
+import { Lightbox } from 'angular2-lightbox';
+import { NgModule } from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 declare var google: any;
 declare var moment: any;
@@ -14,6 +19,7 @@ declare var moment: any;
   templateUrl: './historymap.component.html',
   styleUrls: ['./historymap.component.css']
 })
+
 export class HistorymapComponent implements OnInit {
   public DEFAULT_ZOOM_LEVEL: number = 15;
   lat: number = 10.823099;
@@ -28,10 +34,12 @@ export class HistorymapComponent implements OnInit {
   public carResponse: any[]; //combo tài xế
   public coordinates: any[];
   carOptions: Array<IOption> = [];
-
+  public driversPersonnalScroll: any[];
+  driverFilter: any = { license_plate: '' };
   public filterDevice_Id: string = '';
   public filterStartDate: string = '';
   public filterEndDate: string = '';
+  public campaigns: any[]; //combo hợp đồng
   public dateOptions: any = {
     locale: { format: 'DD/MM/YYYY' },
     alwaysShowCalendars: false,
@@ -59,8 +67,59 @@ export class HistorymapComponent implements OnInit {
     this.filterStartDate = moment(new Date(Date.now())).format('DD/MM/YYYY');
     this.filterEndDate = moment(new Date(Date.now())).format('DD/MM/YYYY');
     this.initMap();
+    this.loadCampaigns();
+    this.loadListUserScroll();
   }
 
+
+  public loadListUserScroll() {
+    // this._ng4LoadingSpinnerService.show();
+    this._dataService.get('/cars/getListCarByCustomerID_Evidence')
+      .subscribe((response: any) => {
+        this.driversPersonnalScroll = response.data;
+       // console.log('driver scroll:' + JSON.stringify(this.driversPersonnalScroll));
+        if (this.driversPersonnalScroll.length > 0) {
+          
+        } else {
+          // this._ng4LoadingSpinnerService.hide();
+        }
+      }, error => this._dataService.handleError(error));
+  }
+  
+
+  public selectedCampaign(event) {
+    let campaign_id = event.target.value;
+    // console.log('value campaign 1',campaign_id);
+    // this._dataService.get('/campaigns/getComboCarByCampaignID/' + campaign_id)
+    // .subscribe((response: any[]) => {
+    //   this.carResponse = response;
+    //   this.itemList = [];
+    //   this.carResponse.forEach(i => {
+    //     this.itemList.push(
+    //       {
+    //         "id": i.value,
+    //         "itemName": i.label
+    //       });
+    //   });
+    //   console.log("data click" + JSON.stringify(this.itemList));
+    // }, error => this._dataService.handleError(error));
+    this._dataService.get('/cars/getListCarByCampaignID_Evidence/' + campaign_id)
+    .subscribe((response: any) => {
+      this.driversPersonnalScroll = response.data;
+     // console.log('driver scroll:' + JSON.stringify(this.driversPersonnalScroll));
+      if (this.driversPersonnalScroll.length > 0) {
+        
+      } else {
+        // this._ng4LoadingSpinnerService.hide();
+      }
+    }, error => this._dataService.handleError(error));
+  }
+
+  private loadCampaigns() {
+    this._dataService.get('/campaigns/getCombo').subscribe((response: any[]) => {
+      this.campaigns = response;
+    });
+  }
   //load combo tài xế
   private loadComboCar() {
     this._dataService.get('/campaigns/getComboCarByCustomerID')
@@ -156,6 +215,92 @@ export class HistorymapComponent implements OnInit {
       this._notificationService.printWarningMessage(MessageContstants.VALID_WARNING_MSG);
     }
   }
+
+
+  public searchByCondition(IdDevice: string) {
+    this.filterDevice_Id = IdDevice;
+    if (this.filterDevice_Id != "") {
+      var start_time = moment(this.filterStartDate, ["DD/MM/YYYY", "YYYY-MM-DD"]);
+      var end_time = moment(this.filterEndDate, ["DD/MM/YYYY", "YYYY-MM-DD"]);
+      /* using diff */
+      var duration = end_time.diff(start_time, 'days') + 1;
+      if (duration > 30) {
+        this._notificationService.printWarningMessage('Vui lòng chọn mốc thời gian trong 30 ngày!');
+        return;
+      }
+      this.initMap();
+      this._ng4LoadingSpinnerService.show();
+      this._dataService.get('/trackings/findAllRankDate?'
+        + 'startDate=' + this.filterStartDate
+        + '&endDate=' + this.filterEndDate + '&device_id=' + this.filterDevice_Id)
+        .subscribe((response: any) => {
+          //length > 2 điểm thì vẽ
+          if (response.success == 1 && response.data.length > 2) {
+
+            var cPoint = Math.floor(response.data.length / 2);
+            this.coordinates = response.data;
+            // console.log('coordinates' , this.coordinates);
+            var mapOptions = {
+              zoom: this.DEFAULT_ZOOM_LEVEL,
+              center: new google.maps.LatLng(this.coordinates[cPoint].lat, this.coordinates[cPoint].lng),
+              mapTypeId: google.maps.MapTypeId.ROADMAP
+            };
+
+            this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+            var polyline = new google.maps.Polyline({
+              path: this.coordinates,
+              strokeColor: '#4a8fe3',
+              strokeOpacity: 0.8,
+              strokeWeight: 4,
+              geodesic: true,
+              icons: [{
+                icon: {
+                  path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                  strokeWeight: 1,
+                  strokeColor: '#001a35',
+                  fillColor: '#fff',
+                  fillOpacity: 1,
+                  scale: 2.5,
+                },
+                offset: '100%',
+                repeat: '200px',
+              }],
+            });
+
+            polyline.setMap(this.map);
+            var marker1 = new google.maps.Marker({
+              position: this.coordinates[0],
+              map: this.map,
+              title: "Bắt đầu",
+              icon: this.icons.start
+            });
+
+            var marker2 = new google.maps.Marker({
+              position: this.coordinates[this.coordinates.length - 1],
+              map: this.map,
+              title: "Kết thúc",
+              icon: this.icons.end
+            });
+
+            const bounds = new google.maps.LatLngBounds();
+            for (let i = 0; i < this.coordinates.length; i++) {
+              bounds.extend(this.coordinates[i]);
+            }
+            this.map.fitBounds(bounds);
+            this._notificationService.printSuccessMessage(MessageContstants.FIND_SUCCESS_MSG);
+            this._ng4LoadingSpinnerService.hide();
+          } else {
+            this._notificationService.printWarningMessage(MessageContstants.NOTFIND_WARNING_MSG);
+            this._ng4LoadingSpinnerService.hide();
+          }
+        }, error => this._dataService.handleError(error));
+    } else {
+      this._notificationService.printWarningMessage(MessageContstants.VALID_WARNING_MSG);
+    }
+  }
+
+
+
   public initMap() {
     var myLatLng = { lat: this.lat, lng: this.lng };
 
